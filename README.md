@@ -32,7 +32,15 @@ import "github.com/shimmeringbee/retry"
 
 ## Usage
 
-**This libraries API is unstable and should not yet be relied upon.**
+Wrapping retry around a network function which may fail but can be safely retried. Retry assumes success if the
+nested function returns nil, if err it will be immediately retried. This assumes that the network function correctly
+handles a context that expires.
+
+```go
+		err := retry.Retry(context.Background(), 250*time.Millisecond, 3, func(ctx context.Context) error {
+			return riskyNetworkFunction(ctx)
+		})
+```
 
 ## Maintainers
 
