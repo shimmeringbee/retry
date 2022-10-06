@@ -22,3 +22,18 @@ func Retry(parent context.Context, duration time.Duration, attempts int, f func(
 
 	return
 }
+
+func RetryWithValue[T any](parent context.Context, duration time.Duration, attempts int, f func(ctx context.Context) (T, error)) (val T, err error) {
+	for i := 0; i < attempts; i++ {
+		ctx, cancel := context.WithTimeout(parent, duration)
+
+		if val, err = f(ctx); err == nil {
+			cancel()
+			return val, nil
+		}
+
+		cancel()
+	}
+
+	return
+}
